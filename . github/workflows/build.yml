@@ -1,1 +1,31 @@
+name: Compilar SuperDisk (.exe)
 
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Instalar PyInstaller
+        run: pip install pyinstaller
+
+      - name: Compilar el ejecutable
+        run: pyinstaller --onefile --console --hidden-import=core --name SuperDisk SuperDisk/main.py
+
+      - name: Subir el .exe como artefacto descargable
+        uses: actions/upload-artifact@v4
+        with:
+          name: SuperDisk-Windows
+          path: dist/SuperDisk.exe
+          retention-days: 30
